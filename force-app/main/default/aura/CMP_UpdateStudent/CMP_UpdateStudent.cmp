@@ -1,0 +1,50 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" controller="CMP_UpdateStudentCtrl">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="student" type="Student__c" />
+    <aura:attribute name="studentId" type="String"></aura:attribute>
+    <aura:attribute name="genderOptions" type="List" />
+    <aura:attribute name="classOptions" type="List" />
+    <aura:attribute name="learningStatusOptions" type="List" />
+
+    <aura:registerEvent name="closeModalEvent" type="c:CloseModalEvent"/>
+    <aura:registerEvent name="RefreshStudentListEvent" type="c:RefreshStudentListEvent"/>
+    <div class="slds-modal__container">
+        <lightning:buttonIcon iconName="utility:close"
+                      onclick="{!c.fireCloseModalEvent}" 
+                      alternativeText="Close"
+                      variant="bare-inverse"
+                      class="custom-modal-close slds-button_icon slds-button_icon-inverse"/>
+        <div class="slds-modal__header slds-text-heading_medium slds-text-align_center">学生を編集</div>
+        <div class="slds-modal__content slds-p-around_medium">
+            <lightning:input name="lastname" required="true" value="{!v.student.Lastname__c}" label="姓" />
+            <lightning:input name="firstname" required="true" value="{!v.student.Firstname__c}" label="名" />
+            <lightning:input type="date" name="birthday" label="生年月日" required="true" value="{!v.student.Birthday__c}" />
+            <lightning:combobox 
+                required="true"
+                name="gender" 
+                label="性別" 
+                value="{!v.student.Gender__c}" 
+                options="{!v.genderOptions}" 
+                placeholder="--なし--" />
+            <lightning:combobox 
+                required="true"
+                name="class" 
+                label="クラス" 
+                value="{!v.student.Class_look__c}" 
+                options="{!v.classOptions}" 
+                placeholder="--なし--" />
+            <lightning:combobox 
+                required="true"
+                name="learningStatus" 
+                label="ステータス" 
+                value="{!v.student.LearningStatus__c}" 
+                options="{!v.learningStatusOptions}" 
+                placeholder="--なし--" />
+            
+        </div>
+        <div class="slds-modal__footer slds-p-horizontal_small slds-text-align_right ">
+            <lightning:button variant="neutral" label="キャンセル" title="Neutral action" onclick="{!c.fireCloseModalEvent}"/>
+            <lightning:button variant="brand" label="保存" title="Brand action" onclick="{!c.handleSave}" />
+        </div>
+    </div>
+</aura:component>

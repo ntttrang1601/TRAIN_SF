@@ -1,0 +1,56 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" controller="CMP_DetailStudentCtrl">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:attribute name="student" type="Student__c"></aura:attribute>
+    <aura:attribute name="studentId" type="String" ></aura:attribute>
+    <aura:registerEvent name="closeModalEvent" type="c:CloseModalEvent"/>
+    <div class="slds-modal__container">
+        <lightning:buttonIcon iconName="utility:close"
+                      onclick="{!c.fireCloseModalEvent}" 
+                      alternativeText="Close"
+                      variant="bare-inverse"
+                      class="custom-modal-close slds-button_icon slds-button_icon-inverse"/>
+        <div class="slds-modal__header slds-text-heading_medium slds-text-align_center">学生の詳細</div>
+        <div class="slds-modal__content slds-p-around_medium slds-grid slds-wrap slds-p-horizontal_small"
+        id="modal-content-id-1">
+            <div class="slds-col slds-size_1-of-2">
+                <div class="slds-p-vertical_x-small">
+                    <label class="slds-form-element__label">学生コード</label>
+                    <div>{!v.student.StudentCode__c}</div>
+                </div>
+                <div class="slds-p-vertical_x-small">
+                    <label class="slds-form-element__label">姓</label>
+                    <div>{!v.student.Lastname__c}</div>
+                </div>
+                <div class="slds-p-vertical_x-small">
+                    <label class="slds-form-element__label">名</label>
+                    <div>{!v.student.Firstname__c}</div>
+                </div>
+                <div class="slds-p-vertical_x-small">
+                    <label class="slds-form-element__label">生年月日</label>
+                    <div>{!v.student.Birthday__c}</div>
+                </div>
+            </div>	
+            <div class="slds-col slds-size_1-of-2">
+                <div class="slds-p-vertical_x-small">
+                    <label class="slds-form-element__label">性別</label>
+                    <div>{!v.student.Gender__c}</div>
+                </div>
+                <div class="slds-p-vertical_x-small">
+                    <label class="slds-form-element__label">クラス</label>
+                    <div>
+                        <a href="#">{!v.student.Class_look__r.Name}</a>
+                    </div>
+                </div>
+                <div class="slds-p-vertical_x-small">
+                    <label class="slds-form-element__label">Status</label>
+                    <div>{!v.student.LearningStatus__c}</div>
+                </div>
+            </div>		
+    </div>
+    <div class="slds-modal__footer slds-p-horizontal_small slds-text-align_right">
+        <lightning:button variant="neutral" label="閉じる" title="Neutral action" onclick="{!c.fireCloseModalEvent}" />
+    </div>
+    </div>
+   
+</aura:component>

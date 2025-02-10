@@ -1,0 +1,8 @@
+.THIS .custom-modal-close {
+    top: -10px;   /* Đưa xuống gần modal hơn */
+    right: -300px; /* Đưa sát modal hơn */
+    background: none;
+    padding: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Đảm bảo nút nằm trên modal */
+}

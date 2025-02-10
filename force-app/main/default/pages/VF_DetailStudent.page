@@ -1,0 +1,59 @@
+<apex:page controller="VF_DetailStudentCtrl">
+    <apex:form >
+        <apex:pageBlock title="学生の詳細">
+            <div style="margin-bottom: 10px;">
+                <apex:outputLabel value="学生コード" />
+            </div>
+            <div style="margin-bottom: 10px;">
+                <apex:outputField value="{!student.StudentCode__c}" />
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <apex:outputLabel value="姓" />
+            </div>
+            <div style="margin-bottom: 10px;">
+                <apex:outputField value="{!student.Lastname__c}" />
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <apex:outputLabel value="名" />
+            </div>
+            <div style="margin-bottom: 10px;">
+                <apex:outputField value="{!student.Firstname__c}" />
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <apex:outputLabel value="生年月日" />
+            </div>
+            <div style="margin-bottom: 10px;">
+                <apex:outputField value="{!student.Birthday__c}" />
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <apex:outputLabel value="性別" />
+            </div>
+            <div style="margin-bottom: 10px;">
+                <apex:outputField value="{!student.Gender__c}" />
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <apex:outputLabel value="クラス" />
+            </div>
+            <div style="margin-bottom: 10px;">
+                <apex:outputField value="{!student.Class_look__c}" />
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <apex:outputLabel value="学習状況" />
+            </div>
+            <div style="margin-bottom: 10px;">
+                <apex:outputField value="{!student.LearningStatus__c}" />
+            </div>
+            
+            <apex:commandButton value="閉じる" action="{!closePage}" />
+            
+        </apex:pageBlock>
+    </apex:form>
+
+    
+</apex:page>

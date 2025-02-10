@@ -1,0 +1,275 @@
+
+<apex:page controller="VF_SearchStudentCtrl" sidebar="false">
+    <apex:form id="searchForm">
+        <apex:pageBlock >
+            <!-- Các trường tìm kiếm -->
+            <apex:pageBlockSection columns="12">
+                <apex:inputText value="{!searchStudentCode}" label="学生コード" />
+                <apex:inputText value="{!searchStudent.Name}" label="氏名" />
+                <apex:selectList id="classSelect" value="{!searchStudent.Class_look__c}" size="1" label="クラス">
+                    <apex:selectOptions value="{!classOptions}" />
+                </apex:selectList>
+                <apex:selectList value="{!searchStudent.Gender__c}" label="性別" size="1">
+                    <apex:selectOption itemValue="" itemLabel="--なし--" />
+                    <apex:selectOption itemValue="Male" itemLabel="男性" />
+                    <apex:selectOption itemValue="Female" itemLabel="女性" />
+                </apex:selectList>
+                <apex:inputField value="{!searchStudent.Birthday__c}" label="生年月日" />
+
+                <apex:selectList value="{!selectedDay}" label="日生" size="1">
+                    <apex:selectOption itemValue="" itemLabel="--なし--"/>
+                    <apex:selectOption itemValue="01" itemLabel="1"/>
+                    <apex:selectOption itemValue="02" itemLabel="2"/>
+                    <apex:selectOption itemValue="03" itemLabel="3"/>
+                    <!-- Thêm các ngày từ 1 đến 31 -->
+                    <apex:selectOption itemValue="31" itemLabel="31"/>
+                </apex:selectList>
+                <apex:selectList value="{!selectedMonth}" label="月生" size="1">
+                    <apex:selectOption itemValue="" itemLabel="--なし--"/>
+                    <apex:selectOption itemValue="01" itemLabel="1"/>
+                    <apex:selectOption itemValue="02" itemLabel="2"/>
+                    <apex:selectOption itemValue="03" itemLabel="3"/>
+                    <!-- Thêm các tháng từ 1 đến 12 -->
+                    <apex:selectOption itemValue="12" itemLabel="12"/>
+                </apex:selectList>
+                
+                <apex:selectList value="{!selectedYear}" label="年生" size="1">
+                    <apex:selectOption itemValue="" itemLabel="--なし--"/>
+                    <!-- Bạn có thể thêm các năm tùy ý -->
+                    <apex:selectOption itemValue="2023" itemLabel="2023"/>
+                    <apex:selectOption itemValue="2024" itemLabel="2024"/>
+                    <apex:selectOption itemValue="2025" itemLabel="2025"/>
+                </apex:selectList>
+            </apex:pageBlockSection>
+
+            <!-- Các nút chức năng -->
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!searchStudents}" value="検索" />
+                <apex:commandButton action="{!createStudent}" value="作成" />
+                <apex:commandButton action="{!resetSearch}" value="クリア" />
+                <apex:commandButton onclick="openDeleteModal()" value="削除" rerender="deleteModalCheckbox"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+
+    <apex:form >
+        <apex:pageBlock >
+            <!-- Danh sách sinh viên -->
+            <apex:pageBlockTable id="searchResultId" value="{!students}" var="student">
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:outputPanel >
+                            <input type="checkbox" id="selectAllCheckbox" onclick="toggleAllCheckboxes(this)" />
+                        </apex:outputPanel>
+                    </apex:facet>
+                    <input type="checkbox" class="studentCheckbox" id="checkbox_{!student.Id}" onchange="updateSelectedList(this)" />
+                </apex:column>
+                <apex:column value="{!student.StudentCode__c}" headerValue="学生コード"/>
+                <apex:column value="{!student.Lastname__c}" headerValue="姓"/>
+                <apex:column value="{!student.Firstname__c}" headerValue="名"/>
+                <apex:column value="{!student.Birthday__c}" headerValue="生年月日"/>
+                <apex:column value="{!student.Gender__c}" headerValue="性別"/>
+                <apex:column value="{!student.Class_look__c}" headerValue="クラス"/>
+                <apex:column headerValue="アクシヨン">
+                    <!-- Các liên kết hành động -->
+                    <apex:outputPanel layout="block">
+                        <apex:commandLink action="{!viewStudent}" value="View">
+                            <apex:param name="studentId" value="{!student.Id}" assignTo="{!selectedStudentId}" />
+                        </apex:commandLink>
+                        |
+                        <apex:commandLink action="{!updateStudent}" value="Edit">
+                            <apex:param name="studentId" value="{!student.Id}" assignTo="{!selectedStudentId}" />
+                        </apex:commandLink>
+                        |
+                        <apex:commandLink action="{!deleteStudents}" value="Delete" onclick="openDeleteModal('{!student.Id}'); return false;">
+                            <apex:param name="studentId" value="{!student.Id}" assignTo="{!selectedStudentIds}" />
+                        </apex:commandLink>
+                    </apex:outputPanel>
+                </apex:column>
+            </apex:pageBlockTable>
+            <!-- Selection info above pagination -->
+            <div class="selection-info">
+                Selected: <span id="selectedCount">0</span> / <span id="totalCount">{!totalStudents}</span>
+            </div>
+            <!-- Hidden input lưu danh sách checkbox đã chọn -->
+            <apex:panelGrid id="paginationId" columns="6" styleClass="pagination">
+                <apex:commandButton value="<<" action="{!firstPage}" disabled="{!currentPage == 1}" />
+                <apex:commandButton value="<" action="{!prevPage}" disabled="{!currentPage == 1}" rerender="searchResultId, selectedCount, paginationId, pageOutputTextId"/>
+                <!-- <apex:repeat value="{!pageNumbers}" var="pageNum">
+                    <apex:commandButton value="{!pageNum}" onclick="setPage('{!pageNum}'); return false;" disabled="{!currentPage == pageNum}"/>
+                
+                </apex:repeat> -->
+                <apex:repeat value="{!pageNumbers}" var="pageNum">
+                    <!-- <apex:commandButton value="{!pageNum}" action="{!Paging}" reRender="searchResultId, paginationId, pageOutputTextId,selectedCount">
+                        <apex:param name="pageNumber" value="{!pageNum}" assignTo="{!currentPage}" />
+                    </apex:commandButton> -->
+                    <apex:commandButton value="{!pageNum}" action="{!goToPage}" disabled="{!currentPage == pageNum}" rerender="searchResultId, selectedCount, paginationId, pageOutputTextId">
+                        <apex:param name="pageNumber" value="{!pageNum}" />
+                    </apex:commandButton>
+                </apex:repeat>
+                <apex:actionFunction action="{!Paging}" name="setPage" rerender="searchResultId, paginationId, pageOutputTextId,selectedCount">
+                    <apex:param name="currentPage" assignTo="{!currentPage}" value="" />
+                </apex:actionFunction>
+                <apex:commandButton value=">" action="{!nextPage}" disabled="{!currentPage == totalPages}" rerender="searchResultId, selectedCount, paginationId"/>
+                <apex:commandButton value=">>" action="{!lastPage}" disabled="{!currentPage == totalPages}" rerender="searchResultId, selectedCount, paginationId"/>
+            </apex:panelGrid>
+            <apex:outputText id="pageOutputTextId" value="Page {!currentPage} of {!totalPages}"/>
+        </apex:pageBlock>
+
+        <apex:inputHidden id="selectedStudentIds" value="{!selectedStudentIds}" />
+        <div id="deleteModalCheckbox" style="display:none;" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <!-- Close Button (X) -->
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick="closeDeleteModalCheckbox();">
+                        <span class="slds-icon_container slds-icon-utility-close" title="Close">
+                            <!-- <lightning-icon icon-name="utility:close" size="small"></lightning-icon> -->
+                            <span style="font-size: 20px; font-weight: bold;">&times;</span>
+                        </span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">学生を削除</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p>この学生の削除を実行しますか？</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="closeDeleteModalCheckbox();">キャンセル</button>
+                    <!-- <button class="slds-button slds-button_destructive" onclick="confirmDelete();">削除</button> -->
+                    <apex:commandButton value="削除" action="{!deleteStudents}" reRender="searchResultId, paginationId, pageOutputTextId" onclick="closeDeleteModalCheckbox();" />
+                </footer>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open" id="deleteBackdropCheckbox" style="display:none;"></div>
+    </apex:form>
+    <style>
+        .dateFormat {
+            display: none;
+        }
+        .slds-modal__header {
+            position: relative;
+        }
+
+        .slds-modal__close {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .slds-modal__container {
+            width: 100%;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .slds-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            max-width: 100%; /* Tăng max-width nếu muốn modal rộng hơn */
+        }
+
+        .slds-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+        }
+    </style>
+    
+
+    <script>
+    function openDeleteModal(studentId) {
+        let selectedIds = [];
+
+        // Nếu có studentId (xóa 1 sinh viên)
+        if (studentId) {
+            selectedIds.push(studentId);
+        } else {
+            // Nếu không có studentId (xóa nhiều sinh viên), lấy danh sách ID từ checkbox đã chọn
+            selectedIds = getSelectedStudentIds(); // Giả sử bạn đã có hàm getSelectedStudentIds() để lấy ID từ checkbox
+        }
+
+        console.log('Selected student Ids:', selectedIds);
+
+        if (selectedIds.length === 0) {
+            alert('No students were selected.');
+            return false;
+        }
+
+        // Lưu danh sách ID vào một input ẩn để gửi về Apex Controller
+        const hiddenInput = document.querySelector("[id$='selectedStudentIds']");
+        if (!hiddenInput) {
+            console.error('Error: Hidden input for selectedStudentIds not found.');
+            return false;
+        }
+        hiddenInput.value = selectedIds.join(',');
+
+        // Gọi Apex để thiết lập các ID đã chọn (dành cho cả 1 ID hoặc nhiều ID)
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.VF_SearchStudentCtrl.setSelectedStudent}',
+            selectedIds.join(','),
+            function(result, event) {
+                if (event.status) {
+                    // Hiển thị modal xóa
+                    document.getElementById('deleteModalCheckbox').style.display = 'block';
+                    document.getElementById('deleteBackdropCheckbox').style.display = 'block';
+                } else {
+                    console.error('Error in Remote Action:', event.message);
+                }
+            }
+        );
+    }
+    
+    function updateSelectedList(checkbox) {
+            var selectedIds = getSelectedStudentIds(); // Lấy tất cả các ID sinh viên đã chọn
+            document.getElementById('selectedCount').innerText = selectedIds.length; // Cập nhật số lượng sinh viên đã chọn
+        }
+
+    function getSelectedStudentIds() {
+            const checkboxes = document.querySelectorAll('.studentCheckbox:checked'); // Lấy tất cả checkbox đã được chọn
+            return Array.from(checkboxes).map(checkbox => checkbox.id.replace('checkbox_', '')); // Trả về danh sách ID sinh viên
+        }
+
+    
+    function closeDeleteModalCheckbox() {
+            document.getElementById('deleteModalCheckbox').style.display = 'none';
+            document.getElementById('deleteBackdropCheckbox').style.display = 'none';
+
+        }
+
+        // Đếm số lượng checkbox được chọn và cập nhật hiển thị
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.studentCheckbox');
+            const selectedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+
+            // Cập nhật số lượng đã chọn
+            document.getElementById('selectedCount').textContent = selectedCount;
+        }
+
+        // Hàm xử lý khi chọn/deselect tất cả checkbox
+        function toggleAllCheckboxes(source) {
+            const checkboxes = document.querySelectorAll('.studentCheckbox');
+            checkboxes.forEach(checkbox => checkbox.checked = source.checked);
+            updateSelectedCount(); // Cập nhật số lượng đã chọn
+        }
+
+        // Gắn sự kiện onchange cho từng checkbox
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('.studentCheckbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedCount);
+            });
+        });
+
+
+        
+
+    </script>
+
+</apex:page>

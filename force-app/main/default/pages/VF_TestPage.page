@@ -1,0 +1,8 @@
+<apex:page controller="VF_Test">
+<!-- Begin Default Content REMOVE THIS -->
+<h1>Congratulations</h1>
+This is your new Page
+<apex:outputField value="{!student.StudentCode__c}" />
+<apex:outputField value="{!student.Lastname__c}" />
+<apex:outputField value="{!student.Firstname__c}" />
+</apex:page>

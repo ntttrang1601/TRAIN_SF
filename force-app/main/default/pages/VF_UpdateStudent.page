@@ -1,0 +1,44 @@
+<apex:page controller="VF_UpdateStudentCtrl">
+    <apex:form>
+        <apex:pageMessages />
+        <apex:pageBlock title="学生を編集">
+            <div class="form-field">
+                <apex:outputLabel value="姓" />
+                <br />
+                <apex:inputField value="{!student.Lastname__c}" />
+            </div>
+            <div class="form-field">
+                <apex:outputLabel value="名" />
+                <br />
+                <apex:inputField value="{!student.Firstname__c}" />
+            </div>
+            <div class="form-field">
+                <apex:outputLabel value="生年月日" />
+                <br />
+                <apex:inputField value="{!student.Birthday__c}" />
+            </div>
+            <div class="form-field">
+                <apex:outputLabel value="性別" />
+                <br />
+                <apex:inputField value="{!student.Gender__c}" />
+            </div>
+            <div class="form-field">
+                <apex:outputLabel value="クラス" />
+                <br />
+                <apex:inputField value="{!student.Class_look__c}" />
+            </div>
+            <div class="form-field">
+                <apex:outputLabel value="学習状況" />
+                <br />
+                <apex:inputField value="{!student.LearningStatus__c}" />
+            </div>            
+        </apex:pageBlock>
+        <apex:commandButton value="キャンセル" action="{!Cancel}" />
+        <apex:commandButton value="保存" action="{!updateStudent}" />
+    </apex:form>
+    <style>
+        .dateFormat {
+            display: none;
+        }
+    </style>
+</apex:page>
