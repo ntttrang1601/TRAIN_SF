@@ -58,6 +58,37 @@ export default class Lwc_SearchStudent extends LightningElement {
         return this.selectedIds.size === 0;
     }
 
+    handleSearchInputChange(event) {
+        const fieldName = event.target.label; // Lấy label của input để xác định trường cần cập nhật
+        const value = event.target.value;
+    
+        switch (fieldName) {
+            case "学生コード":
+                this.studentCode = value;
+                break;
+            case "氏名":
+                this.searchName = value;
+                break;
+            case "クラス":
+                this.classCode = value;
+                break;
+            case "性別":
+                this.gender = value;
+                break;
+            case "生年月日":
+                this.birthDate = value;
+                break;
+            default:
+                break;
+        }
+    
+        // Kích hoạt nút "クリア" khi có dữ liệu nhập vào
+        this.isClearDisabled = !(
+            this.studentCode || this.searchName || this.classCode || this.gender || this.birthDate
+        );
+    }
+    
+
     // Lifecycle hooks
     connectedCallback() {
         this.loadInitialData();
@@ -91,32 +122,6 @@ export default class Lwc_SearchStudent extends LightningElement {
         }
     }
 
-    // async search() {
-    //     try {
-    //         const result = await searchStudents({
-    //             studentCode: this.studentCode,
-    //             searchName: this.searchName,
-    //             classCode: this.classCode,
-    //             gender: this.gender,
-    //             birthDate: this.birthDate,
-    //             pageSize: this.pageSize,
-    //             pageNumber: this.pageNumber
-    //         });
-
-    //         if (result) {
-    //             this.students = result.students.map(student => ({
-    //                 ...student,
-    //                 selected: this.selectedIds.includes(student.Id)
-    //             }));
-    //             this.totalRecords = result.totalRecords;
-    //             this.totalPages = result.totalPages;
-    //             this.calculatePageNumbers();
-    //             this.selectedAll = this.students.every(student => student.selected);
-    //         }
-    //     } catch (error) {
-    //         this.showToast('Error', 'Error searching students', 'error');
-    //     }
-    // }
     async search() {
         try {
             const result = await searchStudents({
@@ -199,33 +204,66 @@ export default class Lwc_SearchStudent extends LightningElement {
         this.showDeleteModal = true;
     }
 
-    async confirmDelete() {
-        try {
-            if (this.deleteId) {
-                await deleteStudent({ studentId: this.deleteId });
-                this.showToast('Success', 'Student deleted successfully', 'success');
-            } else if (this.selectedIds.length > 0) {
-                await deleteStudents({ studentIds: this.selectedIds });
-                this.showToast('Success', 'Selected students deleted successfully', 'success');
-                this.selectedIds = [];
-                this.selectedAll = false;
-            }
-            this.showDeleteModal = false;
-            this.deleteId = null;
-            this.search();
-        } catch (error) {
-            this.showToast('Error', 'Error deleting students', 'error');
+    handleDeleteSelected() {
+        if (this.selectedIds && this.selectedIds.size > 0) {
+            this.showDeleteModal = true;
+        } else {
+            this.showToast('Warning', 'Please select the students you want to delete.', 'warning');
         }
     }
 
-    // handleSelectAll(event) {
-    //     this.selectedAll = event.target.checked;
-    //     this.students = this.students.map(student => ({
-    //         ...student,
-    //         selected: this.selectedAll
-    //     }));
-    //     this.selectedIds = this.selectedAll ? this.students.map(student => student.Id) : [];
+    // async confirmDelete() {
+    //     try {
+    //         if (this.deleteId) {
+    //             await deleteStudent({ studentId: this.deleteId });
+    //             this.showToast('Success', 'Student deleted successfully', 'success');
+    //         } else if (this.selectedIds.size > 0) {
+    //             await deleteStudents({ studentIds: Array.from(this.selectedIds) });
+    //             //await deleteStudents({ studentIds: this.selectedIds });
+    //             console.log('Selected student IDs:', Array.from(this.selectedIds));
+    //             this.showToast('Success', 'Selected students deleted successfully', 'success');
+    //             this.selectedIds = [];
+    //             this.selectedAll = false;
+    //         }
+    //         this.showDeleteModal = false;
+    //         this.deleteId = null;
+    //         this.search();
+    //     } catch (error) {
+    //         this.showToast('Error', 'Error deleting students', 'error');
+    //     }
     // }
+    async confirmDelete() {
+        try {
+            console.log('Current selected IDs before delete:', [...this.selectedIds]); 
+            if (this.deleteId) {
+                await deleteStudent({ studentId: this.deleteId });
+                console.log('Deleted student ID:', this.deleteId); // Debug ID xóa
+                this.showToast('Success', 'Student deleted successfully', 'success');
+            } else if (this.selectedIds.size > 0) {
+                console.log('Deleting multiple students:', [...this.selectedIds]);
+                await deleteStudents({ studentIds: Array.from(this.selectedIds) });
+                this.showToast('Success', 'Selected students deleted successfully', 'success');
+                this.selectedIds.clear();
+                this.selectedAll = false;
+            }
+    
+            this.showDeleteModal = false;
+            this.deleteId = null;
+    
+            await this.search(); // Load lại danh sách sinh viên
+        } catch (error) {
+            console.error('Error deleting students:', error); // Debug lỗi
+            this.showToast('Error', 'Error deleting students', 'error');
+        }
+    }
+    
+
+    closeDeleteModal() {
+        this.showDeleteModal = false;
+        this.deleteId = null;
+    }
+
+    
     handleSelectAll(event) {
         this.selectedAll = event.target.checked;
         
@@ -243,25 +281,15 @@ export default class Lwc_SearchStudent extends LightningElement {
             selected: this.selectedIds.has(student.Id)
         }));
     }
-    
 
-    // handleCheckboxChange(event) {
-    //     const studentId = event.target.value;
-    //     const isSelected = event.target.checked;
-        
-    //     if (isSelected) {
-    //         this.selectedIds = [...this.selectedIds, studentId];
-    //     } else {
-    //         this.selectedIds = this.selectedIds.filter(id => id !== studentId);
-    //     }
-        
-    //     this.students = this.students.map(student => ({
-    //         ...student,
-    //         selected: student.Id === studentId ? isSelected : student.selected
-    //     }));
-        
-    //     this.selectedAll = this.students.every(student => student.selected);
-    // }
+    
+    handleChildEvent(event) {
+        if (event.detail.action === 'closeModal') {
+            this.showCreateModal = false;
+            this.showViewModal = false;
+            this.showEditModal = false;
+        }
+    }
 
     handleCheckboxChange(event) {
         const studentId = event.target.value;
@@ -273,6 +301,8 @@ export default class Lwc_SearchStudent extends LightningElement {
             this.selectedIds.delete(studentId);
         }
     
+        console.log('Updated selected IDs:', [...this.selectedIds]);
+    
         this.students = this.students.map(student => ({
             ...student,
             selected: this.selectedIds.has(student.Id)
@@ -280,6 +310,24 @@ export default class Lwc_SearchStudent extends LightningElement {
     
         this.selectedAll = this.students.every(student => this.selectedIds.has(student.Id));
     }
+    
+    // handleCheckboxChange(event) {
+    //     const studentId = event.target.value;
+    //     const isSelected = event.target.checked;
+    
+    //     if (isSelected) {
+    //         this.selectedIds.add(studentId);
+    //     } else {
+    //         this.selectedIds.delete(studentId);
+    //     }
+    
+    //     this.students = this.students.map(student => ({
+    //         ...student,
+    //         selected: this.selectedIds.has(student.Id)
+    //     }));
+    
+    //     this.selectedAll = this.students.every(student => this.selectedIds.has(student.Id));
+    // }
     
 
     // Pagination handlers
@@ -333,7 +381,13 @@ export default class Lwc_SearchStudent extends LightningElement {
         this.deleteId = null;
     }
 
-    handleRefresh() {
-        this.search();
+    handleRefresh(event) {
+        if (event.detail === 'refresh') {
+            this.showCreateModal = false; // Đóng modal
+            this.showEditModal = false;
+            this.search(); // Load lại danh sách sinh viên
+        }
     }
+    
+    
 }

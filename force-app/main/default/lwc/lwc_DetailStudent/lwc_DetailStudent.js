@@ -3,8 +3,17 @@ import { LightningElement, track, api } from 'lwc';
 import getStudent from '@salesforce/apex/LWC_DetailStudentCtrl.getStudent';
 
 export default class Lwc_DetailStudent extends LightningElement {
+    @api message;
     @api studentId = 'a00WU00000TyrglYAB'; // Gán cứng ID
     @track student = {}; // Khởi tạo đối tượng trống
+
+    sendMessageToParent() {
+        const event = new CustomEvent('childmessage', {
+            detail: { action: 'closeModal' } // Gửi thông điệp rõ ràng
+        });
+    
+        this.dispatchEvent(event);
+    }
 
     connectedCallback() {
         this.getDataInit();

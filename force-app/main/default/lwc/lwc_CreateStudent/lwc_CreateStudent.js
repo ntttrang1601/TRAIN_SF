@@ -1,10 +1,11 @@
-import { LightningElement, track, wire } from 'lwc';
+import { LightningElement, track, api,  wire } from 'lwc';
 import getPicklistValues from '@salesforce/apex/LWC_CreateStudentCtrl.getPicklistValues';
 import getClassLookupRecords from '@salesforce/apex/LWC_CreateStudentCtrl.getClassLookupRecords';
 import createStudent from '@salesforce/apex/LWC_CreateStudentCtrl.createStudent';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class Lwc_CreateStudent extends LightningElement {
+    @api message;
     @track student = {
         Lastname__c: '',
         Firstname__c: '',
@@ -17,6 +18,15 @@ export default class Lwc_CreateStudent extends LightningElement {
     @track genderOptions = [];
     @track classOptions = [];
     @track learningStatusOptions = [];
+
+
+    sendMessageToParent() {
+        const event = new CustomEvent('childmessage', {
+            detail: { action: 'closeModal' } // Gửi thông điệp rõ ràng
+        });
+    
+        this.dispatchEvent(event);
+    }
 
     // Fetch picklist values on component load
     connectedCallback() {
@@ -96,26 +106,30 @@ export default class Lwc_CreateStudent extends LightningElement {
     }
     
 
+
     handleSave() {
         if (!this.validateFields()) {
             return;
         }
         console.log('Student Data:', JSON.stringify(this.student));
-
+    
         createStudent({ student: this.student })
             .then(() => {
                 this.showToast('SUCCESS', 'Student information saved.', 'success');
-                this.dispatchEvent(new CustomEvent('refreshstudentlist'));
-                this.dispatchEvent(new CustomEvent('closemodal'));
+    
+                // Phát sự kiện cho cha để đóng modal và làm mới danh sách
+                this.dispatchEvent(new CustomEvent('refreshmessage', {
+                    detail: 'refresh',
+                    bubbles: true,
+                    composed: true
+                }));
             })
             .catch(error => {
                 console.error('Error saving student: ', error);
             });
     }
+    
 
-    handleCancel() {
-        this.dispatchEvent(new CustomEvent('closemodal'));
-    }
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({

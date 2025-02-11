@@ -125,6 +125,7 @@ public with sharing class LWC_SearchStudentCtrl {
             Student__c studentToDelete = [SELECT Id FROM Student__c WHERE Id = :studentId LIMIT 1];
             if (studentToDelete != null) {
                 delete studentToDelete;
+                
             }
         } catch (Exception e) {
             throw new AuraHandledException('Error deleting student: ' + e.getMessage());
@@ -134,6 +135,7 @@ public with sharing class LWC_SearchStudentCtrl {
     @AuraEnabled
     public static void deleteStudents(List<String> studentIds) {
         try {
+            System.debug('Deleting student IDs: ' + JSON.serialize(studentIds));
             // Check permissions
             if (!Schema.sObjectType.Student__c.isDeletable()) {
                 throw new AuraHandledException('Insufficient permissions to delete students');
@@ -147,6 +149,7 @@ public with sharing class LWC_SearchStudentCtrl {
             throw new AuraHandledException('Error deleting students: ' + e.getMessage());
         }
     }
+    
 
     // Wrapper class for search results
     public class SearchResult {

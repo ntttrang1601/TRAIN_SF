@@ -12,6 +12,14 @@ export default class Lwc_UpdateStudent extends LightningElement {
     @track learningStatusOptions = [];
     @track classOptions = [];
 
+    sendMessageToParent() {
+        const event = new CustomEvent('childmessage', {
+            detail: { action: 'closeModal' } // Gửi thông điệp rõ ràng
+        });
+    
+        this.dispatchEvent(event);
+    }
+
     @wire(getStudent, { studentId: '$studentId' })
     wiredStudent({ error, data }) {
         if (data) {
@@ -86,17 +94,18 @@ export default class Lwc_UpdateStudent extends LightningElement {
         updateStudent({ updatedStudent: this.student })
             .then(() => {
                 this.showToast('Success', 'Student updated successfully', 'success');
-                this.dispatchEvent(new CustomEvent('refreshstudentlist', { detail: true }));
-                this.dispatchEvent(new CustomEvent('closemodal'));
+                // Phát sự kiện cho cha để đóng modal và làm mới danh sách
+                this.dispatchEvent(new CustomEvent('refreshmessage', {
+                    detail: 'refresh',
+                    bubbles: true,
+                    composed: true
+                }));
             })
             .catch(error => {
                 this.showToast('Error', error.body.message, 'error');
             });
     }
 
-    fireCloseModalEvent() {
-        this.dispatchEvent(new CustomEvent('closemodal'));
-    }
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));

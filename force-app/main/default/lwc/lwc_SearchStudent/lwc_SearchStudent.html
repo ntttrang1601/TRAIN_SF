@@ -202,4 +202,47 @@
             </div>
         </div>
     </div>
+    <template if:true={showCreateModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <c-Lwc_-Create-Student  onrefreshmessage={handleRefresh} onchildmessage={handleChildEvent}></c-Lwc_-Create-Student>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showViewModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <c-Lwc_-Detail-Student student-id={selectedStudentId} onchildmessage={handleChildEvent}></c-Lwc_-Detail-Student>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showEditModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <c-Lwc_-Update-Student student-id={selectedStudentId} onrefreshmessage={handleRefresh} onchildmessage={handleChildEvent}></c-Lwc_-Update-Student>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={showDeleteModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-button_icon-bare slds-modal__close" title="Close" onclick={closeDeleteModal}>
+                        <lightning-icon icon-name="utility:close" size="small" alternative-text="Close"></lightning-icon>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">確認</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>選択した学生を削除してもよろしいですか？</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="キャンセル" 
+                                    onclick={closeDeleteModal}></lightning-button>
+                    <lightning-button label="削除" 
+                                    variant="brand"
+                                    onclick={confirmDelete}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
 </template>
