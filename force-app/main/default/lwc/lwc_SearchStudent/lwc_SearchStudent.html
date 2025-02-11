@@ -1,0 +1,205 @@
+
+<!-- searchStudent.html -->
+<template>
+    <div class="slds-card">
+        <!-- Header with Search Fields -->
+        <div class="slds-card__header">
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-1">
+                    <div class="search-container slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-input 
+                                label="学生コード"
+                                value={studentCode}
+                                onchange={handleSearchInputChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-input 
+                                label="氏名"
+                                value={searchName}
+                                onchange={handleSearchInputChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-combobox
+                                label="クラス"
+                                value={classCode}
+                                options={classOptions}
+                                placeholder="--なし--"
+                                onchange={handleSearchInputChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-combobox
+                                label="性別"
+                                value={gender}
+                                options={genderOptions}
+                                placeholder="--なし--"
+                                onchange={handleSearchInputChange}>
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6">
+                            <lightning-input 
+                                type="date"
+                                label="生年月日"
+                                value={birthDate}
+                                onchange={handleSearchInputChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="slds-grid slds-gutters slds-m-top_medium">
+                        <div class="slds-col">
+                            <lightning-button 
+                                label="検索"
+                                variant="brand"
+                                icon-name="utility:search"
+                                class="slds-m-right_x-small"
+                                onclick={handleSearch}>
+                            </lightning-button>
+                            <lightning-button 
+                                label="作成"
+                                variant="neutral"
+                                icon-name="utility:add"
+                                class="slds-m-right_x-small"
+                                onclick={handleCreate}>
+                            </lightning-button>
+                            <lightning-button 
+                                label="クリア"
+                                icon-name="utility:clear"
+                                class="slds-m-right_x-small"
+                                onclick={handleClear}
+                                disabled={isClearDisabled}>
+                            </lightning-button>
+                            <lightning-button 
+                                label="削除"
+                                variant="destructive"
+                                icon-name="utility:delete"
+                                onclick={handleDeleteSelected}
+                                disabled={isDeleteDisabled}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="slds-card__body">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th class="slds-cell-shrink">
+                            <lightning-input 
+                                type="checkbox"
+                                checked={selectedAll}
+                                onchange={handleSelectAll}>
+                            </lightning-input>
+                        </th>
+                        <th>学生コード</th>
+                        <th>姓</th>
+                        <th>名</th>
+                        <th>生年月日</th>
+                        <th>性別</th>
+                        <th>クラス</th>
+                        <th>アクション</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={students} for:item="student">
+                        <tr key={student.Id}>
+                            <td>
+                                <lightning-input 
+                                    type="checkbox"
+                                    checked={student.selected}
+                                    value={student.Id}
+                                    onchange={handleCheckboxChange}>
+                                </lightning-input>
+                            </td>
+                            <td>
+                                <a onclick={handleView} data-id={student.Id}>
+                                    {student.StudentCode__c}
+                                </a>
+                            </td>
+                            <td>{student.Lastname__c}</td>
+                            <td>{student.Firstname__c}</td>
+                            <td>
+                                <lightning-formatted-date-time 
+                                    value={student.Birthday__c}
+                                    year="numeric"
+                                    month="2-digit"
+                                    day="2-digit">
+                                </lightning-formatted-date-time>
+                            </td>
+                            <td>{student.Gender__c}</td>
+                            <td>{student.Class_look__r.Name}</td>
+                            <td>
+                                <lightning-button-icon 
+                                    icon-name="utility:preview"
+                                    alternative-text="Detail"
+                                    value={student.Id}
+                                    onclick={handleView}>
+                                </lightning-button-icon>
+                                <lightning-button-icon 
+                                    icon-name="utility:edit"
+                                    alternative-text="Edit"
+                                    value={student.Id}
+                                    onclick={handleEdit}>
+                                </lightning-button-icon>
+                                <lightning-button-icon 
+                                    icon-name="utility:delete"
+                                    alternative-text="Delete"
+                                    value={student.Id}
+                                    onclick={handleDelete}>
+                                </lightning-button-icon>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Selection Counter -->
+        <div class="slds-text-left slds-m-top_x-small">
+            Selected: {selectedIds.size} / {totalRecords}
+        </div>
+
+        <!-- Pagination -->
+        <div class="slds-card__footer">
+            <div class="slds-grid slds-grid_align-center">
+                <lightning-button 
+                    label="≪"
+                    onclick={handleFirst}
+                    disabled={isFirstPage}>
+                </lightning-button>
+                <lightning-button 
+                    label="＜"
+                    onclick={handlePrevious}
+                    disabled={isFirstPage}>
+                </lightning-button>
+                <template for:each={computedPageNumbers} for:item="btn">
+                    <lightning-button 
+                        key={btn.num}
+                        label={btn.num}
+                        variant={btn.variant}
+                        value={btn.num}
+                        onclick={handlePageChange}>
+                    </lightning-button>
+                </template>
+                <lightning-button 
+                    label="＞"
+                    onclick={handleNext}
+                    disabled={isLastPage}>
+                </lightning-button>
+
+                <lightning-button 
+                    label="≫"
+                    onclick={handleLast}
+                    disabled={isLastPage}>
+                </lightning-button>
+            </div>
+        </div>
+    </div>
+</template>
