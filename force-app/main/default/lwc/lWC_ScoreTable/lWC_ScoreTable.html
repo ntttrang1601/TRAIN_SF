@@ -1,0 +1,170 @@
+<!-- <template>
+    <lightning-card title="Student's Academic Results" icon-name="standard:education">
+        <div class="slds-m-around_medium">
+            <h2 class="slds-text-title_bold">学習成果</h2>
+            <div class="slds-grid slds-gutters slds-align-items-center">
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <p>合計クレジット: <span class="slds-text-title_bold">21</span></p>
+                </div>
+            
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <p>平均学分績点: <span class="slds-text-title_bold">5.45</span></p>
+                </div>
+            
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <lightning-button label="PDF出力" variant="brand"></lightning-button>
+                </div>
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <lightning-combobox
+                            name="semesterSelect"
+                            value={selectedSemester}
+                            placeholder="全て"
+                            options={semesterOptions}
+                            onchange={handleSemesterChange}
+                            class="custom-combobox">
+                        </lightning-combobox>
+                    
+                </div>
+            </div>
+            
+            
+            <template for:each={filteredSemesters} for:item="semester">
+                <div key={semester.Id}>
+                    <h3 class="slds-text-title_bold" style="color: #0070d2;">{semester.Name} ({semester.StartDate} ~ {semester.EndDate})</h3>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout">
+                        <thead>
+                            <tr>
+                                <th class="slds-text-title_bold" style="width: 10%;">科目コード</th>
+                                <th class="slds-text-title_bold" style="width: 20%;">科目名</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">クレジット</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">進捗点</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">実技</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">中間試験</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">期末試験</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">科目平均点</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={semester.SubjectScores} for:item="subjectScore">
+                                <tr key={subjectScore.Id}>
+                                    <td class="slds-text-align_left">{subjectScore.SubjectCode}</td>
+                                    <td class="slds-text-align_left">{subjectScore.Name}</td>
+                                    <td class="slds-text-align_left">{subjectScore.Credits}</td>
+                                    <td class="slds-text-align_left">{subjectScore.Progress}</td>
+                                    <td class="slds-text-align_left">{subjectScore.Practical}</td>
+                                    <td class="slds-text-align_left">{subjectScore.Midterm}</td>
+                                    <td class="slds-text-align_left">{subjectScore.Final}</td>
+                                    <td class="slds-text-align_left">{subjectScore.AverageScore}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td> 
+                                <td class="slds-text-title_bold slds-text-align_left">学期平均</td>
+                                <td class="slds-text-title_bold">{totalCredits}</td> 
+                                <td colspan="4"></td> 
+                                <td class="slds-text-title_bold">{semester.average}</td> 
+                            </tr>
+                            
+                        </tfoot>                        
+                    </table>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template> -->
+
+
+<template>
+    <lightning-card>
+        <div class="slds-m-around_lagre">
+            <h2 class="slds-text-title_bold">学習成果</h2>
+            <div class="slds-grid slds-gutters slds-align-items-center">
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <p>合計クレジット: <span class="slds-text-title_bold">21</span></p>
+                </div>
+            
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <p>平均学分績点: <span class="slds-text-title_bold">5.45</span></p>
+                </div>
+            
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <lightning-button label="PDF出力" variant="brand"></lightning-button>
+                </div>
+                <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                    <lightning-combobox
+                            name="semesterSelect"
+                            value={selectedSemester}
+                            placeholder="全て"
+                            options={semesterOptions}
+                            onchange={handleSemesterChange}
+                            class="custom-combobox">
+                        </lightning-combobox>
+                    
+                </div>
+            </div>
+            
+            
+            <template for:each={filteredSemesters} for:item="semester">
+                <div key={semester.Id}>
+                    <h3 class="slds-text-title_bold" style="color: #0070d2;">{semester.Name} ({semester.StartDate} ~ {semester.EndDate})</h3>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout">
+                        <thead>
+                            <tr>
+                                <th class="slds-text-title_bold" style="width: 10%;">科目コード</th>
+                                <th class="slds-text-title_bold" style="width: 20%;">科目名</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">クレジット</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">進捗点</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">実技</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">中間試験</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">期末試験</th>
+                                <th class="slds-text-title_bold" style="width: 10%;">科目平均点</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={semester.SubjectScores} for:item="subjectScore">
+                                <tr key={subjectScore.subjectId}>
+                                    <td class="slds-text-align_left">{subjectScore.subjectCode}</td>
+                                    <td class="slds-text-align_left">{subjectScore.subjectName}</td>
+                                    <td class="slds-text-align_left">{subjectScore.credits}</td>
+                                    <td class="slds-text-align_left">{subjectScore.progressScore}</td>
+                                    <td class="slds-text-align_left">{subjectScore.practicalScore}</td>
+                                    <td class="slds-text-align_left">{subjectScore.midtermScore}</td>
+                                    <td class="slds-text-align_left">{subjectScore.finalScore}</td>
+                                    <!-- <td class="slds-text-align_left">{subjectScore.averageScore}</td> -->
+                                    <td class="slds-text-align_left">
+                                        <template if:true={subjectScore.isFail}>
+                                            <span style="color: red; font-weight: bold;">{subjectScore.averageScore}</span>
+                                        </template>
+                                        <template if:false={subjectScore.isFail}>
+                                            {subjectScore.averageScore}
+                                        </template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td> 
+                                <td class="slds-text-title_bold slds-text-align_left">学期平均</td>
+                                <td class="slds-text-title_bold">{semester.totalCredits}</td> 
+                                <td colspan="4"></td> 
+                                <td class="slds-text-title_bold">{semester.semesterGPA}</td> 
+                            </tr>
+                            
+                        </tfoot>                        
+                    </table>
+                </div>
+            </template>
+        </div>
+        <template if:false={showAllSemesters}>
+            <div class="slds-m-top_medium">
+                <a href="javascript:void(0);" onclick={showMoreSemesters} style="color: #0070d2; font-weight: bold;">
+                    さらに表示
+                </a>
+            </div>
+        </template>
+    </lightning-card>
+</template>
+

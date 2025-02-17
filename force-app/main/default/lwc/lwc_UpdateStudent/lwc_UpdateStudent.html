@@ -1,17 +1,11 @@
 <template>
     <div class="slds-modal__container">
-        <!-- <lightning-button-icon icon-name="utility:close"
-                      alternative-text="Close"
-                      variant="bare-inverse"
-                      class="custom-modal-close slds-button_icon slds-button_icon-inverse"></lightning-button-icon> -->
-        <lightning-button-icon 
-                    icon-name="utility:close" 
-                    variant="bare" 
-                    class="slds-modal__close custom-modal-close"
-                    alternative-text="Close" 
-                    onclick={sendMessageToParent}>
-            </lightning-button-icon>
-        <div class="slds-modal__header slds-text-heading_medium slds-text-align_center">学生を編集</div>
+        <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-button_icon-bare slds-modal__close" title="Close" onclick={closeDeleteModal}>
+                <lightning-icon icon-name="utility:close" size="small" alternative-text="Close" onclick={sendMessageToParent}></lightning-icon>
+            </button>
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">学生を編集</h2>
+        </header>
         <div class="slds-modal__content slds-p-around_medium">
             <lightning-input name="Lastname__c" required="true" value={student.Lastname__c} label="姓" onchange={handleInputChange}></lightning-input>
             <lightning-input name="Firstname__c" required="true" value={student.Firstname__c} label="名" onchange={handleInputChange}></lightning-input>
@@ -43,7 +37,7 @@
             
         </div>
         <div class="slds-modal__footer slds-p-horizontal_small slds-text-align_right ">
-            <lightning-button variant="neutral" label="キャンセル" title="Neutral action" onclick={sendMessageToParent}></lightning-button>
+            <lightning-button variant="neutral" label="キャンセル" title="Neutral action" class="slds-m-right_x-small" onclick={sendMessageToParent}></lightning-button>
             <lightning-button variant="brand" label="保存" title="Brand action" onclick={handleSave}></lightning-button>
         </div>
     </div>

@@ -1,18 +1,12 @@
 <template>
-    <div class="slds-modal__container">
-        <!-- <lightning-button-icon icon-name="utility:close"
-                      alternative-text="Close"
-                      variant="bare-inverse"
-                      class="custom-modal-close slds-button_icon slds-button_icon-inverse"></lightning-button-icon> -->
-        <lightning-button-icon 
-            icon-name="utility:close" 
-            variant="bare" 
-            class="slds-modal__close custom-modal-close"
-            alternative-text="Close" 
-            onclick={sendMessageToParent}>
-            </lightning-button-icon>
-        <div class="slds-modal__header slds-text-heading_medium slds-text-align_center">学生の詳細</div>
-        <div class="slds-modal__content slds-p-around_medium slds-grid slds-wrap slds-p-horizontal_small"
+    <div class="slds-modal__container" style="width: 75%; max-width: 75%;">
+        <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-button_icon-bare slds-modal__close" title="Close" onclick={closeDeleteModal}>
+                <lightning-icon icon-name="utility:close" size="small" alternative-text="Close" onclick={sendMessageToParent}></lightning-icon>
+            </button>
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">学生の詳細</h2>
+        </header>
+        <div class="slds-modal__content slds-p-around_large slds-grid slds-wrap slds-p-horizontal_small"
         id="modal-content-id-1">
             <div class="slds-col slds-size_1-of-2">
                 <div class="slds-p-vertical_x-small">
@@ -48,7 +42,10 @@
                     <div>{student.LearningStatus__c}</div>
                 </div>
             </div>		
+            <c-L-W-C_-score-Table student-id={studentId}></c-L-W-C_-score-Table>
+
     </div>
+   
     <div class="slds-modal__footer slds-p-horizontal_small slds-text-align_right">
         <lightning-button variant="neutral" label="閉じる" title="Neutral action" onclick={sendMessageToParent}>></lightning-button>
     </div>

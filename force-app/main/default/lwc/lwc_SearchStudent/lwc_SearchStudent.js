@@ -46,14 +46,17 @@ export default class Lwc_SearchStudent extends LightningElement {
         return this.pageNumber === 1;
     }
     get isLastPage() {
-        return this.pageNumber === this.totalPages;
+        return this.pageNumber === this.totalPages || this.students.length === 0;;
     }
     get computedPageNumbers() {
         return this.pageNumbers.map(num => ({
             num,
-            variant: num === this.pageNumber ? 'brand' : 'neutral'
+            variant: num === this.pageNumber ? 'brand' : 'neutral',
+            disabled: num === this.pageNumber
         }));
     }
+
+    
     get isDeleteDisabled() {
         return this.selectedIds.size === 0;
     }
@@ -172,6 +175,8 @@ export default class Lwc_SearchStudent extends LightningElement {
 
     // Event handlers
     handleSearch() {
+        this.selectedIds.clear(); 
+        this.selectedAll = false; 
         this.pageNumber = 1;
         this.search();
     }
