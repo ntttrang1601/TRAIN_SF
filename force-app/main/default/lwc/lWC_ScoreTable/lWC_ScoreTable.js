@@ -99,7 +99,8 @@ export default class LWC_ScoreTable extends LightningElement {
     @track semesters = [];
     @track selectedSemester = '';
     @track semesterOptions = [];
-    @track showAllSemesters = false; 
+    @track displayedSemesters = [];
+    @track visibleCount = 2;
     
     @wire(getStudentScores, { studentId: '$studentId' })
     wiredScores({ error, data }) {
@@ -123,24 +124,54 @@ export default class LWC_ScoreTable extends LightningElement {
                 // SubjectScores: semester.subjectScores,
                 SubjectScores: semester.subjectScores.map(score => ({
                     ...score,
-                    isFail: score.averageScore < 4 // Đánh dấu nếu điểm dưới 4
+                    isFail: score.averageScore < 5 // Đánh dấu nếu điểm dưới 5
                 })),
                 totalCredits: semester.totalCredits,
-                semesterGPA: semester.semesterGPA
+                semesterGPA: semester.semesterGPA,
+                gpaStatus: semester.semesterGPA < 5 ? 'Not Passed' : 'Passed',
+                isFailGPA: semester.semesterGPA < 5
             };
         });
+        //this.displayedSemesters = this.semesters.slice(0, this.visibleCount);
+        this.updateDisplayedSemesters();
     }
 
-    get filteredSemesters() {
+    //get filteredSemesters() {
         //return this.selectedSemester ? this.semesters.filter(sem => sem.Id === this.selectedSemester) : this.semesters;
-        return this.showAllSemesters ? this.semesters : this.semesters.slice(0, 2);
+        //return this.showAllSemesters ? this.semesters : this.semesters.slice(0, 2);
+    //}
+    
+
+    updateDisplayedSemesters() {
+        if (this.selectedSemester) {
+            // Nếu chọn học kỳ cụ thể, chỉ hiển thị học kỳ đó
+            this.displayedSemesters = this.semesters.filter(sem => sem.Id === this.selectedSemester);
+        } else {
+            // Nếu chọn "全て", chỉ hiển thị học kỳ đầu tiên
+            this.displayedSemesters = this.semesters.slice(0, this.visibleCount);
+        }
     }
 
     handleSemesterChange(event) {
         this.selectedSemester = event.target.value;
+    
+        if (this.selectedSemester === '') {
+            // Nếu chọn "全て", reset về trạng thái ban đầu: chỉ hiển thị 2 học kỳ đầu tiên
+            this.visibleCount = 2;
+        }
+    
+        this.updateDisplayedSemesters();
     }
+
+    get hasMoreSemesters() {
+        return !this.selectedSemester && this.visibleCount < this.semesters.length;
+    }
+
     showMoreSemesters() {
-        this.showAllSemesters = true;
+        if (this.hasMoreSemesters) {
+            this.visibleCount+=2;
+            this.updateDisplayedSemesters();
+        }
     }
 }
 

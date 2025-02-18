@@ -94,19 +94,19 @@
                 </div>
                 <div class="slds-col slds-p-horizontal_small slds-align-middle">
                     <lightning-combobox
-                            name="semesterSelect"
-                            value={selectedSemester}
-                            placeholder="全て"
-                            options={semesterOptions}
-                            onchange={handleSemesterChange}
-                            class="custom-combobox">
-                        </lightning-combobox>
+                        name="semesterSelect"
+                        value={selectedSemester}
+                        placeholder="全て"
+                        options={semesterOptions}
+                        onchange={handleSemesterChange}
+                        class="custom-combobox">
+                    </lightning-combobox>
                     
                 </div>
             </div>
             
             
-            <template for:each={filteredSemesters} for:item="semester">
+            <template for:each={displayedSemesters} for:item="semester">
                 <div key={semester.Id}>
                     <h3 class="slds-text-title_bold" style="color: #0070d2;">{semester.Name} ({semester.StartDate} ~ {semester.EndDate})</h3>
                     <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout">
@@ -150,7 +150,16 @@
                                 <td class="slds-text-title_bold slds-text-align_left">学期平均</td>
                                 <td class="slds-text-title_bold">{semester.totalCredits}</td> 
                                 <td colspan="4"></td> 
-                                <td class="slds-text-title_bold">{semester.semesterGPA}</td> 
+                                <!-- <td class="slds-text-title_bold">{semester.semesterGPA}</td>  -->
+                                <td class="slds-text-title_bold">
+                                    <template if:true={semester.isFailGPA}>
+                                        <span style="color: red; font-weight: bold;">{semester.semesterGPA}</span>
+                                    </template>
+                                    <template if:false={semester.isFailGPA}>
+                                        {semester.semesterGPA}
+                                    </template>
+                                    <lightning-helptext content={semester.gpaStatus}></lightning-helptext>
+                                </td>
                             </tr>
                             
                         </tfoot>                        
@@ -158,8 +167,8 @@
                 </div>
             </template>
         </div>
-        <template if:false={showAllSemesters}>
-            <div class="slds-m-top_medium">
+        <template if:true={hasMoreSemesters}>
+            <div class="slds-m-top_medium slds-text-align_center">
                 <a href="javascript:void(0);" onclick={showMoreSemesters} style="color: #0070d2; font-weight: bold;">
                     さらに表示
                 </a>
