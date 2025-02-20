@@ -86,9 +86,10 @@ export default class Lwc_SearchStudent extends LightningElement {
         }
     
         // Kích hoạt nút "クリア" khi có dữ liệu nhập vào
-        this.isClearDisabled = !(
-            this.studentCode || this.searchName || this.classCode || this.gender || this.birthDate
-        );
+        // this.isClearDisabled = !(
+        //     this.studentCode || this.searchName || this.classCode || this.gender || this.birthDate
+        // );
+        this.isClearDisabled = !(this.studentCode || this.searchName || this.classCode || this.gender || this.birthDate || this.selectedIds.size > 0);
     }
     
 
@@ -181,14 +182,37 @@ export default class Lwc_SearchStudent extends LightningElement {
         this.search();
     }
 
+    // handleClear() {
+    //     this.studentCode = '';
+    //     this.searchName = '';
+    //     this.classCode = '';
+    //     this.gender = '';
+    //     this.birthDate = null;
+    //     this.isClearDisabled = true;
+    // }
+
     handleClear() {
+        // Xóa các trường tìm kiếm
         this.studentCode = '';
         this.searchName = '';
         this.classCode = '';
         this.gender = '';
         this.birthDate = null;
+    
+        // Xóa checkbox đã chọn
+        this.selectedIds.clear();
+        this.selectedAll = false;
+        
+        // Reset danh sách students để bỏ chọn checkbox
+        this.students = this.students.map(student => ({
+            ...student,
+            selected: false
+        }));
+    
+        // Vô hiệu hóa nút "クリア"
         this.isClearDisabled = true;
     }
+    
 
     handleCreate() {
         this.showCreateModal = true;
@@ -285,6 +309,8 @@ export default class Lwc_SearchStudent extends LightningElement {
             ...student,
             selected: this.selectedIds.has(student.Id)
         }));
+        // Kích hoạt nút "クリア" nếu có ít nhất một checkbox được chọn hoặc có dữ liệu nhập
+        this.isClearDisabled = !(this.selectedIds.size > 0 || this.studentCode || this.searchName || this.classCode || this.gender || this.birthDate);
     }
 
     
@@ -295,7 +321,6 @@ export default class Lwc_SearchStudent extends LightningElement {
             this.showEditModal = false;
         }
     }
-
     handleCheckboxChange(event) {
         const studentId = event.target.value;
         const isSelected = event.target.checked;
@@ -306,16 +331,20 @@ export default class Lwc_SearchStudent extends LightningElement {
             this.selectedIds.delete(studentId);
         }
     
-        console.log('Updated selected IDs:', [...this.selectedIds]);
-    
+        // Cập nhật trạng thái checkbox
         this.students = this.students.map(student => ({
             ...student,
             selected: this.selectedIds.has(student.Id)
         }));
     
+        // Kiểm tra nếu tất cả checkbox trên trang đều được chọn
         this.selectedAll = this.students.every(student => this.selectedIds.has(student.Id));
+    
+        // Hiển thị nút "クリア" nếu có ít nhất một checkbox được chọn hoặc có dữ liệu nhập
+        this.isClearDisabled = !(this.selectedIds.size > 0 || this.studentCode || this.searchName || this.classCode || this.gender || this.birthDate);
     }
     
+
     // handleCheckboxChange(event) {
     //     const studentId = event.target.value;
     //     const isSelected = event.target.checked;
@@ -326,6 +355,8 @@ export default class Lwc_SearchStudent extends LightningElement {
     //         this.selectedIds.delete(studentId);
     //     }
     
+    //     console.log('Updated selected IDs:', [...this.selectedIds]);
+    
     //     this.students = this.students.map(student => ({
     //         ...student,
     //         selected: this.selectedIds.has(student.Id)
@@ -334,6 +365,7 @@ export default class Lwc_SearchStudent extends LightningElement {
     //     this.selectedAll = this.students.every(student => this.selectedIds.has(student.Id));
     // }
     
+
 
     // Pagination handlers
     handleFirst() {

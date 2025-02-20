@@ -6,6 +6,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class Lwc_CreateStudent extends LightningElement {
     @api message;
+    @track birthdayError = false;
     @track student = {
         Lastname__c: '',
         Firstname__c: '',
@@ -67,57 +68,90 @@ export default class Lwc_CreateStudent extends LightningElement {
     
     
 
+    // validateFields() {
+    //     let isValid = true;
+    //     const inputs = this.template.querySelectorAll('lightning-input, lightning-combobox');
+    
+    //     inputs.forEach(input => {
+    //         if (!input.checkValidity()) { // Dùng checkValidity() thay vì value
+    //             isValid = false;
+    //             input.reportValidity();
+    //         }
+    //     });
+    
+    //     if (!this.student.Lastname__c || !this.student.Firstname__c || !this.student.Birthday__c) {
+    //         this.showToast('Error', 'すべてのフィールドを入力してください。', 'error');
+    //         isValid = false;
+    //     }
+    
+    //     if (this.student.Birthday__c) {
+    //         const birthDate = new Date(this.student.Birthday__c);
+    //         if (isNaN(birthDate)) { // Kiểm tra nếu ngày không hợp lệ
+    //             this.showToast('Error', '生年月日が無効です。', 'error');
+    //             return false;
+    //         }
+    
+    //         const today = new Date();
+    //         let age = today.getFullYear() - birthDate.getFullYear();
+    //         if (today.getMonth() < birthDate.getMonth() || 
+    //             (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+    //             age--;
+    //         }
+    
+    //         if (age < 18) {
+    //             this.showToast('Error', '学生は18歳以上でなければなりません。', 'error');
+    //             isValid = false;
+    //         }
+    //     }
+    //     return isValid;
+    // }
+
     validateFields() {
         let isValid = true;
+        this.birthdayError = false; // Reset lỗi sinh nhật
+    
         const inputs = this.template.querySelectorAll('lightning-input, lightning-combobox');
     
         inputs.forEach(input => {
-            if (!input.checkValidity()) { // Dùng checkValidity() thay vì value
-                isValid = false;
+            if (!input.checkValidity()) { 
                 input.reportValidity();
+                isValid = false;
             }
         });
     
-        if (!this.student.Lastname__c || !this.student.Firstname__c || !this.student.Birthday__c) {
-            this.showToast('Error', 'すべてのフィールドを入力してください。', 'error');
+        if (!this.student.Birthday__c) {
+            return isValid;
+        }
+    
+        // Kiểm tra tuổi
+        const birthDate = new Date(this.student.Birthday__c);
+        if (isNaN(birthDate)) {
+            return false;
+        }
+    
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        if (today.getMonth() < birthDate.getMonth() || 
+            (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+    
+        if (age < 18) {
+            this.birthdayError = true; // Gán lỗi để HTML hiển thị thông báo
             isValid = false;
         }
     
-        if (this.student.Birthday__c) {
-            const birthDate = new Date(this.student.Birthday__c);
-            if (isNaN(birthDate)) { // Kiểm tra nếu ngày không hợp lệ
-                this.showToast('Error', '生年月日が無効です。', 'error');
-                return false;
-            }
-    
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            if (today.getMonth() < birthDate.getMonth() || 
-                (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-    
-            if (age < 18) {
-                this.showToast('Error', '学生は18歳以上でなければなりません。', 'error');
-                isValid = false;
-            }
-        }
         return isValid;
     }
-    
-
 
     handleSave() {
         if (!this.validateFields()) {
-            return;
+            return; // Nếu có lỗi thì không lưu
         }
-        console.log('Student Data:', JSON.stringify(this.student));
     
         createStudent({ student: this.student })
             .then(() => {
                 this.showToast('SUCCESS', 'Student information saved.', 'success');
-    
-                // Phát sự kiện cho cha để đóng modal và làm mới danh sách
                 this.dispatchEvent(new CustomEvent('refreshmessage', {
                     detail: 'refresh',
                     bubbles: true,
@@ -128,6 +162,31 @@ export default class Lwc_CreateStudent extends LightningElement {
                 console.error('Error saving student: ', error);
             });
     }
+    
+    
+
+
+    // handleSave() {
+    //     if (!this.validateFields()) {
+    //         return;
+    //     }
+    //     console.log('Student Data:', JSON.stringify(this.student));
+    
+    //     createStudent({ student: this.student })
+    //         .then(() => {
+    //             this.showToast('SUCCESS', 'Student information saved.', 'success');
+    
+    //             // Phát sự kiện cho cha để đóng modal và làm mới danh sách
+    //             this.dispatchEvent(new CustomEvent('refreshmessage', {
+    //                 detail: 'refresh',
+    //                 bubbles: true,
+    //                 composed: true
+    //             }));
+    //         })
+    //         .catch(error => {
+    //             console.error('Error saving student: ', error);
+    //         });
+    // }
     
 
 

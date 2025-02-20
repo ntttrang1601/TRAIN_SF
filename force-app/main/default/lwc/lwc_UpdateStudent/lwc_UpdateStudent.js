@@ -71,26 +71,80 @@ export default class Lwc_UpdateStudent extends LightningElement {
         console.log('Updated Student:', this.student);
     }
 
+    // handleSave() {
+    //     const today = new Date();
+    //     const birthDate = new Date(this.student.Birthday__c);
+        
+    //     if (!this.student.Lastname__c || !this.student.Firstname__c || !this.student.Birthday__c || !this.student.Gender__c || !this.student.Class_look__c) {
+    //         //this.showToast('ERROR', 'All required fields must be filled.', 'error');
+    //         return;
+    //     }
+
+    //     let age = today.getFullYear() - birthDate.getFullYear();
+    //     let monthDiff = today.getMonth() - birthDate.getMonth();
+    //     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    //         age--;
+    //     }
+
+    //     if (age < 18) {
+    //         this.showToast('ERROR', 'The student must be at least 18 years old.', 'error');
+    //         return;
+    //     }
+
+    //     updateStudent({ updatedStudent: this.student })
+    //         .then(() => {
+    //             this.showToast('Success', 'Student updated successfully', 'success');
+    //             // Phát sự kiện cho cha để đóng modal và làm mới danh sách
+    //             this.dispatchEvent(new CustomEvent('refreshmessage', {
+    //                 detail: 'refresh',
+    //                 bubbles: true,
+    //                 composed: true
+    //             }));
+    //         })
+    //         .catch(error => {
+    //             this.showToast('Error', error.body.message, 'error');
+    //         });
+    // }
     handleSave() {
         const today = new Date();
         const birthDate = new Date(this.student.Birthday__c);
-        
-        if (!this.student.Lastname__c || !this.student.Firstname__c || !this.student.Birthday__c || !this.student.Gender__c || !this.student.Class_look__c) {
-            this.showToast('ERROR', 'All required fields must be filled.', 'error');
-            return;
+        let isValid = true; // Biến để kiểm tra tổng thể form có hợp lệ không
+    
+        // Lặp qua tất cả các input trong form
+        this.template.querySelectorAll('.validate-field').forEach(input => {
+            const fieldName = input.name;
+            const value = input.value;
+    
+            if (!value) {
+                //input.setCustomValidity('この項目を入力してください'); // "Vui lòng nhập trường này"
+                isValid = false;
+            } else {
+                input.setCustomValidity('');
+            }
+    
+            // Kiểm tra tuổi hợp lệ
+            if (fieldName === 'Birthday__c' && value) {
+                let age = today.getFullYear() - birthDate.getFullYear();
+                let monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+    
+                if (age < 18) {
+                    input.setCustomValidity('学生は18歳以上でなければなりません。'); // "Học sinh phải từ 18 tuổi trở lên."
+                    isValid = false;
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+    
+            input.reportValidity(); // Hiển thị lỗi trên UI
+        });
+    
+        if (!isValid) {
+            return; // Dừng xử lý nếu có lỗi
         }
-
-        let age = today.getFullYear() - birthDate.getFullYear();
-        let monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-
-        if (age < 18) {
-            this.showToast('ERROR', 'The student must be at least 18 years old.', 'error');
-            return;
-        }
-
+    
         updateStudent({ updatedStudent: this.student })
             .then(() => {
                 this.showToast('Success', 'Student updated successfully', 'success');
@@ -99,12 +153,13 @@ export default class Lwc_UpdateStudent extends LightningElement {
                     detail: 'refresh',
                     bubbles: true,
                     composed: true
-                }));
-            })
+                    }));
+                })
             .catch(error => {
                 this.showToast('Error', error.body.message, 'error');
             });
     }
+    
 
 
     showToast(title, message, variant) {

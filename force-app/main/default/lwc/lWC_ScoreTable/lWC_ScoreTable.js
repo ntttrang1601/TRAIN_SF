@@ -95,7 +95,7 @@ import { LightningElement, wire, track,api } from 'lwc';
 import getStudentScores from '@salesforce/apex/LWC_DetailStudentCtrl.getStudentScores';
 
 export default class LWC_ScoreTable extends LightningElement {
-    @api studentId;
+    @api studentId='a00WU00000TyrglYAB';
     @track semesters = [];
     @track selectedSemester = '';
     @track semesterOptions = [];

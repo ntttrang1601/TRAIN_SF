@@ -78,33 +78,40 @@
 
 <template>
     <lightning-card>
-        <div class="slds-m-around_lagre">
+        <div class="slds-m-around_medium">
             <h2 class="slds-text-title_bold">学習成果</h2>
-            <div class="slds-grid slds-gutters slds-align-items-center">
-                <div class="slds-col slds-p-horizontal_small slds-align-middle">
-                    <p>合計クレジット: <span class="slds-text-title_bold">21</span></p>
-                </div>
-            
-                <div class="slds-col slds-p-horizontal_small slds-align-middle">
-                    <p>平均学分績点: <span class="slds-text-title_bold">5.45</span></p>
-                </div>
-            
-                <div class="slds-col slds-p-horizontal_small slds-align-middle">
-                    <lightning-button label="PDF出力" variant="brand"></lightning-button>
-                </div>
-                <div class="slds-col slds-p-horizontal_small slds-align-middle">
-                    <lightning-combobox
-                        name="semesterSelect"
-                        value={selectedSemester}
-                        placeholder="全て"
-                        options={semesterOptions}
-                        onchange={handleSemesterChange}
-                        class="custom-combobox">
-                    </lightning-combobox>
-                    
+            <div class="slds-p-horizontal_medium">
+                <div class="slds-grid slds-wrap slds-gutters slds-align-items-center slds-grid_align-spread">
+                    <!-- Nhóm bên trái -->
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                            <p>合計クレジット: <span class="slds-text-title_bold">21</span></p>
+                        </div>
+                        <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                            <p>平均学分績点: <span class="slds-text-title_bold">5.45</span></p>
+                        </div>
+                    </div>
+        
+                    <!-- Nhóm bên phải -->
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                            <lightning-button label="PDF出力" variant="brand"></lightning-button>
+                        </div>
+                        <div class="slds-col slds-p-horizontal_small slds-align-middle">
+                            <lightning-combobox
+                                name="semesterSelect"
+                                value={selectedSemester}
+                                placeholder="全て"
+                                options={semesterOptions}
+                                onchange={handleSemesterChange}
+                                class="custom-combobox"
+                                variant="label-hidden"
+                                style="width: 200px;">
+                            </lightning-combobox>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
             
             <template for:each={displayedSemesters} for:item="semester">
                 <div key={semester.Id}>

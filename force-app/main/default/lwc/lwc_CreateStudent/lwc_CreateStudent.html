@@ -10,7 +10,27 @@
         <div class="slds-modal__content slds-p-around_medium">
             <lightning-input aura:id="lastname" name="Lastname__c" required="true" value={student.Lastname__c} label="姓" onchange={handleInputChange}></lightning-input>
             <lightning-input aura:id="firstname" name="Firstname__c" required="true" value={student.Firstname__c} label="名" onchange={handleInputChange}></lightning-input>
-            <lightning-input aura:id="birthday" type="date" name="Birthday__c" label="生年月日" required="true" value={student.Birthday__c} onchange={handleInputChange}></lightning-input>
+            <!-- <lightning-input aura:id="birthday" 
+                type="date" name="Birthday__c" 
+                label="生年月日" required="true" 
+                value={student.Birthday__c} 
+                onchange={handleInputChange}></lightning-input> -->
+            <lightning-input 
+                aura:id="birthday" 
+                type="date" 
+                name="Birthday__c" 
+                required 
+                value={student.Birthday__c} 
+                label="生年月日"
+                data-field="Birthday__c"
+                onchange={handleInputChange}>
+            </lightning-input>
+
+            <!-- Hiển thị lỗi khi tuổi < 18 -->
+            <template if:true={birthdayError}>
+                <div class="slds-text-color_error slds-m-top_xx-small">学生は18歳以上でなければなりません。</div>
+            </template>
+
             <lightning-combobox 
                 aura:id="gender"
                 required="true"

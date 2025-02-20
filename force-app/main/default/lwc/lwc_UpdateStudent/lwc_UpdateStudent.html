@@ -7,9 +7,9 @@
             <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">学生を編集</h2>
         </header>
         <div class="slds-modal__content slds-p-around_medium">
-            <lightning-input name="Lastname__c" required="true" value={student.Lastname__c} label="姓" onchange={handleInputChange}></lightning-input>
-            <lightning-input name="Firstname__c" required="true" value={student.Firstname__c} label="名" onchange={handleInputChange}></lightning-input>
-            <lightning-input type="date" name="Birthday__c" label="生年月日" required="true" value={student.Birthday__c} onchange={handleInputChange}></lightning-input>
+            <lightning-input name="Lastname__c" required="true" value={student.Lastname__c} label="姓" onchange={handleInputChange} class="validate-field"></lightning-input>
+            <lightning-input name="Firstname__c" required="true" value={student.Firstname__c} label="名" onchange={handleInputChange} class="validate-field"></lightning-input>
+            <lightning-input type="date" name="Birthday__c" label="生年月日" required="true" value={student.Birthday__c} onchange={handleInputChange} class="validate-field"></lightning-input>
             <lightning-combobox 
                 required="true"
                 name="Gender__c" 
@@ -17,7 +17,7 @@
                 value={student.Gender__c}
                 options={genderOptions} 
                 placeholder="--なし--" 
-                onchange={handleInputChange}></lightning-combobox>
+                onchange={handleInputChange} class="validate-field"></lightning-combobox>
             <lightning-combobox 
                 required="true"
                 name="Class_look__c" 
@@ -25,7 +25,7 @@
                 value={student.Class_look__c} 
                 options={classOptions}
                 placeholder="--なし--" 
-                onchange={handleInputChange}></lightning-combobox>
+                onchange={handleInputChange} class="validate-field"></lightning-combobox>
             <lightning-combobox 
                 required="true"
                 name="LearningStatus__c" 
@@ -33,7 +33,7 @@
                 value={student.LearningStatus__c}
                 options={learningStatusOptions} 
                 placeholder="--なし--" 
-                onchange={handleInputChange}></lightning-combobox>
+                onchange={handleInputChange} class="validate-field"></lightning-combobox>
             
         </div>
         <div class="slds-modal__footer slds-p-horizontal_small slds-text-align_right ">
